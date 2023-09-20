@@ -15,11 +15,15 @@ const EnrolledCourses = () => {
   
     const axiosPrivate = useAxiosPrivate();
   
+  const username = auth.user.user.username
+  
+
     const fetchCourses = async () => {
       setIsLoading(true);
-      const response = await axiosPrivate.get("/api/v1/enrollments/");
+      const response = await axiosPrivate.get(`/api/course/enrolledCourse/${username}`);
   
       const cData = response.data;
+      console.log("🚀 ~ file: EnrolledCourses.js:26 ~ fetchCourses ~ cData:", cData)
   
       setCourseData(cData);
       setIsLoading(false);

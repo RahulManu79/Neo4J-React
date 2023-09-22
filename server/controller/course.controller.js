@@ -80,12 +80,13 @@ module.exports = {
     },
 
     enrolledCourses: async (req, res) => {
-        const {username} = req.params
+        const { username } = req.params;
 
         const result = await session.run(
-            "MATCH (u:User {username:$username})-[:ENROLLED_IN]->(c:Course)-[:BELONGS_TO]->(l:Lesson)RETURN c, COLLECT(l) AS lessons;",
-            {username}
-            )
+            "MATCH (u:User { username: $username })-[:ENROLLED_IN]->(c:Course) OPTIONAL MATCH (l:Lesson)-[:BELONGS_TO]->(c) RETURN c, COLLECT(DISTINCT l) AS lessons;",
+            { username }
+        );
+
         const courses = result.records.map(record => {
             const courseNode = record.get('c');
             const lessonNodes = record.get('lessons').map(lessonNode => ({
@@ -102,11 +103,11 @@ module.exports = {
                 lessons: lessonNodes,
             };
         });
-        console.log("🚀 ~ file: course.controller.js:105 ~ courses ~ courses:", courses)
 
         res.status(200).json({
             status: 'success',
             courses: courses,
         });
     }
+
 }
